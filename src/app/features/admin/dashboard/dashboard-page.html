@@ -1,0 +1,68 @@
+<header class="page-header">
+  <div>
+    <h1>Resumen</h1>
+    <p>Quién avanza, quién necesita un empujón y qué cursos están funcionando.</p>
+  </div>
+</header>
+
+<section class="panel block" aria-labelledby="students-title">
+  <div class="block-head">
+    <h2 id="students-title">Estudiantes según su ritmo</h2>
+    <button type="button" class="btn btn-secondary btn-sm" [disabled]="running()" (click)="runScoring()">
+      {{ running() ? 'Clasificando…' : 'Actualizar clasificación' }}
+    </button>
+  </div>
+  @if (summary.error()) {
+    <app-load-error [error]="summary.error()" (retry)="summary.reload()" />
+  } @else {
+    <app-segment-distribution [summary]="summary.value()" />
+  }
+  <p class="footnote">
+    Se recalcula cada noche con el progreso, la actividad reciente y los cursos terminados.
+    <a routerLink="/admin/estudiantes">Ver el detalle por estudiante</a>
+  </p>
+</section>
+
+<section class="block" aria-labelledby="courses-title">
+  <div class="block-head">
+    <h2 id="courses-title">Cómo van los cursos publicados</h2>
+    <a class="btn btn-ghost btn-sm" routerLink="/admin/cursos">Ver todos</a>
+  </div>
+
+  @if (topCourses.error()) {
+    <app-load-error [error]="topCourses.error()" (retry)="topCourses.reload()" />
+  } @else if (topCourses.hasValue()) {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Curso</th>
+            <th scope="col" class="num">Inscritos</th>
+            <th scope="col">Progreso promedio</th>
+            <th scope="col" class="num">Terminaron</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (course of topCourses.value().data; track course.id) {
+            <tr>
+              <td><a [routerLink]="['/admin/cursos', course.id]">{{ course.title }}</a></td>
+              <td class="num">{{ course.stats.enrolledCount }}</td>
+              <td class="progress-cell"><app-progress-bar [value]="course.stats.avgProgress" [label]="'Progreso promedio en ' + course.title" /></td>
+              <td class="num">
+                @if (course.stats.enrolledCount) {
+                  {{ course.stats.completionRate }} %
+                } @else {
+                  <app-badge>Sin inscritos</app-badge>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4" class="muted">Aún no hay cursos publicados.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="skeleton" aria-hidden="true"></div>
+  }
+</section>

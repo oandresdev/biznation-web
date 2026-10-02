@@ -1,0 +1,17 @@
+.message {
+  max-width: 28rem;
+
+  p {
+    margin: 0 0 var(--space-1);
+  }
+}
+
+.error-detail {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--bn-danger);
+}
+
+.received {
+  white-space: nowrap;
+}

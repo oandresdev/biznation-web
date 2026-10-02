@@ -1,0 +1,70 @@
+<a class="back-link" routerLink="/cursos">Volver a cursos</a>
+
+@if (course.hasValue()) {
+  @let c = course.value();
+  <header class="course-header">
+    <h1>{{ c.title }}</h1>
+    @if (c.description) {
+      <p class="description">{{ c.description }}</p>
+    }
+
+    @if (c.isEnrolled) {
+      <div class="progress-block">
+        <span class="progress-caption">
+          {{ c.myProgress === 100 ? 'Curso completado' : 'Tu progreso' }}
+        </span>
+        <app-progress-bar class="lg" [value]="c.myProgress" [label]="'Progreso en ' + c.title" />
+      </div>
+    } @else {
+      <div class="enroll">
+        <p>Inscríbete para marcar lecciones y guardar tu avance.</p>
+        <button type="button" class="btn btn-primary" [disabled]="enrolling()" (click)="enroll()">
+          {{ enrolling() ? 'Inscribiendo…' : 'Inscribirme' }}
+        </button>
+      </div>
+    }
+  </header>
+
+  <section aria-labelledby="lessons-title">
+    <h2 id="lessons-title">Lecciones</h2>
+    <ol class="track">
+      @for (lesson of c.lessons; track lesson.id; let i = $index) {
+        <li class="step" [class.done]="lesson.completed" [class.next]="c.isEnrolled && lesson.id === nextLessonId()">
+          <span class="marker" aria-hidden="true">
+            @if (lesson.completed) {
+              <svg viewBox="0 0 16 16" width="16" height="16"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            } @else {
+              {{ i + 1 }}
+            }
+          </span>
+          <div class="step-body">
+            <h3>{{ lesson.title }}</h3>
+            @if (lesson.completed) {
+              <span class="state">Completada</span>
+            } @else if (c.isEnrolled) {
+              <button
+                type="button"
+                class="btn btn-sm"
+                [class.btn-primary]="lesson.id === nextLessonId()"
+                [class.btn-secondary]="lesson.id !== nextLessonId()"
+                [disabled]="completingId() !== null"
+                (click)="complete(lesson)"
+              >
+                {{ completingId() === lesson.id ? 'Guardando…' : 'Marcar como completada' }}
+              </button>
+            }
+          </div>
+        </li>
+      }
+    </ol>
+  </section>
+} @else if (notFound()) {
+  <h1>Este curso no está disponible</h1>
+  <p class="description">Puede que ya no esté publicado. Revisa los cursos disponibles.</p>
+} @else if (course.error()) {
+  <app-load-error [error]="course.error()" (retry)="course.reload()" />
+} @else {
+  <div class="skeleton" aria-hidden="true"></div>
+  <div class="skeleton" aria-hidden="true"></div>
+  <span class="visually-hidden" role="status">Cargando curso</span>
+}

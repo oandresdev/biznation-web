@@ -1,0 +1,98 @@
+<header class="page-header">
+  <div>
+    <h1>Mensajes de WhatsApp</h1>
+    <p>Lo que escriben los estudiantes, clasificado por tema. Los que fallan se pueden reintentar.</p>
+  </div>
+  <button type="button" class="btn btn-ghost" [disabled]="events.isLoading()" (click)="events.reload()">Actualizar</button>
+</header>
+
+<nav class="tabs" aria-label="Filtrar por estado">
+  <button type="button" class="btn btn-sm" [class.btn-secondary]="!status()" [class.btn-ghost]="status()" [attr.aria-pressed]="!status()"
+    (click)="queryState.update({ estado: null })">Todos</button>
+  @for (filter of statusFilters; track filter) {
+    <button
+      type="button"
+      class="btn btn-sm"
+      [class.btn-secondary]="status() === filter"
+      [class.btn-ghost]="status() !== filter"
+      [attr.aria-pressed]="status() === filter"
+      (click)="queryState.update({ estado: filter })"
+    >
+      {{ statusMeta[filter].label }}
+    </button>
+  }
+</nav>
+
+@if (events.error()) {
+  <app-load-error [error]="events.error()" (retry)="events.reload()" />
+} @else if (events.hasValue()) {
+  @let result = events.value();
+  @if (result.data.length) {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Recibido</th>
+            <th scope="col">Mensaje</th>
+            <th scope="col">Tema</th>
+            <th scope="col">Estado</th>
+            <th scope="col"><span class="visually-hidden">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (event of result.data; track event.id) {
+            <tr>
+              <td class="received">
+                <span [title]="event.createdAt | date: 'medium'">{{ event.createdAt | relativeTime }}</span>
+              </td>
+              <!-- Unión discriminada: dentro de cada rama, TypeScript conoce la forma exacta de payload y result. -->
+              @if (event.eventType === 'message') {
+                <td class="message">
+                  <p>{{ event.payload.text?.body ?? '(mensaje sin texto)' }}</p>
+                  <span class="muted">De +{{ event.payload.from }}</span>
+                </td>
+                <td>
+                  @if (event.result; as result) {
+                    <app-badge [tone]="intentMeta[result.intent].tone">{{ intentMeta[result.intent].label }}</app-badge>
+                    @if (result.userId === null) {
+                      <div class="muted">Número no registrado</div>
+                    }
+                  } @else {
+                    <span class="muted">Sin clasificar</span>
+                  }
+                </td>
+              } @else {
+                <td class="message"><span class="muted">Confirmación de entrega: {{ event.payload.status }}</span></td>
+                <td></td>
+              }
+              <td>
+                <app-badge [tone]="statusMeta[event.status].tone">{{ statusMeta[event.status].label }}</app-badge>
+                @if (event.attempts > 1) {
+                  <div class="muted">{{ event.attempts }} intentos</div>
+                }
+                @if (event.status === 'failed' && event.lastError) {
+                  <div class="error-detail">{{ event.lastError }}</div>
+                }
+              </td>
+              <td class="num">
+                @if (event.status === 'failed') {
+                  <button type="button" class="btn btn-secondary btn-sm" [disabled]="retryingId() === event.id" (click)="retry(event)">
+                    Reintentar
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-paginator [meta]="result.meta" (pageChange)="queryState.goToPage($event)" />
+  } @else {
+    <app-empty-state
+      heading="No hay mensajes en esta vista"
+      message="Cuando un estudiante escriba al WhatsApp de Biz Nation, su mensaje aparecerá aquí clasificado por tema."
+    />
+  }
+} @else {
+  <div class="skeleton" aria-hidden="true"></div>
+}

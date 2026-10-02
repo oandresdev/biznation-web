@@ -1,0 +1,66 @@
+.standing {
+  margin-bottom: var(--space-6);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--bn-navy);
+  color: #fff;
+  max-width: 44rem;
+
+  h2 {
+    margin: 0;
+    color: #fff;
+  }
+
+  p {
+    margin: var(--space-3) 0 var(--space-2);
+    font-size: var(--text-md);
+    max-width: 52ch;
+  }
+}
+
+.standing-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.updated {
+  font-size: var(--text-sm);
+  color: rgb(255 255 255 / 0.65);
+}
+
+.my-courses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-5);
+  max-width: 44rem;
+
+  li {
+    display: grid;
+    gap: var(--space-2);
+  }
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+
+  h2 {
+    margin: 0;
+    font-size: var(--text-md);
+
+    a {
+      color: inherit;
+    }
+  }
+}
+
+.activity {
+  font-size: var(--text-sm);
+  color: var(--bn-ink-soft);
+}

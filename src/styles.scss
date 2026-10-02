@@ -1,0 +1,367 @@
+/* =========================================================================
+   Biz Nation — sistema de diseño
+   Marca: azul marino del encabezado, amarillo de "El movimiento amarillo" y violeta de las franjas.
+   El amarillo se reserva para el progreso y la acción principal; nada más compite con él.
+   ========================================================================= */
+
+:root {
+  /* Color */
+  --bn-navy: #1e2b39;
+  --bn-navy-soft: #2b3c4f;
+  --bn-yellow: #ffd23f;
+  --bn-yellow-strong: #f2b705;
+  --bn-violet: #a66cf2;
+  --bn-violet-ink: #6d32c2;
+  --bn-paper: #f4f6f9;
+  --bn-surface: #ffffff;
+  --bn-ink: #1e2b39;
+  --bn-ink-soft: #566577;
+  --bn-line: #e1e6ec;
+  --bn-line-strong: #c6cfd9;
+  --bn-track: #e6ebf1;
+  --bn-danger: #b93a32;
+  --bn-success: #1f7a52;
+  --bn-warning: #94600f;
+  --bn-focus: #a66cf2;
+
+  /* Tipografía: escala modular 1.2 sobre 16 px */
+  --font-display: 'Montserrat', system-ui, sans-serif;
+  --font-body: 'Source Sans 3', system-ui, sans-serif;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+
+  /* Espacio (base 4 px) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Forma: radios por jerarquía, no uno solo para todo */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --sidebar-width: 15.5rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.55;
+  color: var(--bn-ink);
+  background: var(--bn-paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--bn-navy);
+}
+
+h1 {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  margin: 0;
+}
+
+h2 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+h3 {
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+a {
+  color: var(--bn-violet-ink);
+  text-underline-offset: 0.2em;
+}
+
+:focus-visible {
+  outline: 3px solid var(--bn-focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Encabezado de página ---------- */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+
+  p {
+    margin: var(--space-2) 0 0;
+    color: var(--bn-ink-soft);
+    max-width: 60ch;
+  }
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--space-3);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 2.5rem;
+  padding: 0 var(--space-4);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  font: 600 var(--text-base) / 1 var(--font-body);
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--bn-ink);
+  transition: background-color 150ms ease, border-color 150ms ease;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  background: var(--bn-yellow);
+  color: var(--bn-navy);
+
+  &:hover:not(:disabled) {
+    background: var(--bn-yellow-strong);
+  }
+}
+
+.btn-secondary {
+  border-color: var(--bn-navy);
+  color: var(--bn-navy);
+
+  &:hover:not(:disabled) {
+    background: var(--bn-navy);
+    color: #fff;
+  }
+}
+
+.btn-ghost {
+  color: var(--bn-ink-soft);
+
+  &:hover:not(:disabled) {
+    background: var(--bn-track);
+    color: var(--bn-ink);
+  }
+}
+
+.btn-danger {
+  border-color: var(--bn-danger);
+  color: var(--bn-danger);
+
+  &:hover:not(:disabled) {
+    background: var(--bn-danger);
+    color: #fff;
+  }
+}
+
+.btn-sm {
+  min-height: 2rem;
+  padding: 0 var(--space-3);
+  font-size: var(--text-sm);
+}
+
+/* ---------- Formularios ---------- */
+.field {
+  display: grid;
+  gap: var(--space-1);
+
+  label {
+    font-weight: 600;
+  }
+
+  .hint {
+    font-size: var(--text-sm);
+    color: var(--bn-ink-soft);
+  }
+}
+
+.input {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--bn-line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bn-surface);
+  font: inherit;
+  color: inherit;
+
+  &:focus-visible {
+    border-color: var(--bn-violet);
+    outline-offset: 0;
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--bn-danger);
+  }
+}
+
+textarea.input {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.field-error {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--bn-danger);
+}
+
+.form-error {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: #fbe6e4;
+  color: var(--bn-danger);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+
+  .field {
+    min-width: 10rem;
+  }
+
+  .field-grow {
+    flex: 1 1 16rem;
+  }
+}
+
+/* ---------- Superficies ---------- */
+.panel {
+  background: var(--bn-surface);
+  border: 1px solid var(--bn-line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+/* ---------- Tablas ---------- */
+.table-wrap {
+  overflow-x: auto;
+  background: var(--bn-surface);
+  border: 1px solid var(--bn-line);
+  border-radius: var(--radius-lg);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--bn-line);
+  }
+
+  th {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--bn-ink-soft);
+    background: var(--bn-paper);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .muted {
+    color: var(--bn-ink-soft);
+    font-size: var(--text-sm);
+  }
+}
+
+/* ---------- Estados de carga ---------- */
+.skeleton {
+  height: 4.5rem;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--bn-track) 0%, #f0f3f7 50%, var(--bn-track) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+
+  & + & {
+    margin-top: var(--space-3);
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.table .progress-cell {
+  min-width: 12rem;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}

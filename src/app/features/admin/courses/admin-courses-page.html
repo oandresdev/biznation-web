@@ -1,0 +1,95 @@
+<header class="page-header">
+  <div>
+    <h1>Cursos</h1>
+    <p>Todos los cursos, incluidos los borradores, con el avance de sus estudiantes.</p>
+  </div>
+  <a class="btn btn-primary" routerLink="/admin/cursos/nuevo">Nuevo curso</a>
+</header>
+
+<div class="filters" role="search">
+  <div class="field field-grow">
+    <label for="search">Buscar por título</label>
+    <input #search id="search" class="input" type="search" [value]="searchDraft()" (input)="searchDraft.set(search.value)" />
+  </div>
+  <div class="field">
+    <label for="status">Estado</label>
+    <select #statusSelect id="status" class="input" [value]="status()" (change)="queryState.update({ estado: statusSelect.value || null })">
+      <option value="">Todos</option>
+      <option value="publicados">Publicados</option>
+      <option value="borradores">Borradores</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="from">Creados desde</label>
+    <input #from id="from" class="input" type="date" [value]="desde() ?? ''" (change)="queryState.update({ desde: from.value || null })" />
+  </div>
+  <div class="field">
+    <label for="to">Hasta</label>
+    <input #to id="to" class="input" type="date" [value]="hasta() ?? ''" (change)="queryState.update({ hasta: to.value || null })" />
+  </div>
+  <div class="field">
+    <label for="progress">Progreso promedio</label>
+    <select #progressSelect id="progress" class="input" [value]="progreso() ?? ''" (change)="queryState.update({ progreso: progressSelect.value || null })">
+      <option value="">Cualquiera</option>
+      @for (option of minProgressOptions; track option) {
+        <option [value]="option">{{ option }} % o más</option>
+      }
+    </select>
+  </div>
+</div>
+
+@if (courses.error()) {
+  <app-load-error [error]="courses.error()" (retry)="courses.reload()" />
+} @else if (courses.hasValue()) {
+  @let result = courses.value();
+  @if (result.data.length) {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Curso</th>
+            <th scope="col">Estado</th>
+            <th scope="col" class="num">Lecciones</th>
+            <th scope="col" class="num">Inscritos</th>
+            <th scope="col">Progreso promedio</th>
+            <th scope="col" class="num">Terminaron</th>
+            <th scope="col">Creado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (course of result.data; track course.id) {
+            <tr>
+              <td><a [routerLink]="['/admin/cursos', course.id]">{{ course.title }}</a></td>
+              <td>
+                @if (course.isPublished) {
+                  <app-badge tone="success">Publicado</app-badge>
+                } @else {
+                  <app-badge>Borrador</app-badge>
+                }
+              </td>
+              <td class="num">{{ course.lessonsCount }}</td>
+              <td class="num">
+                <a [routerLink]="['/admin/cursos', course.id, 'estudiantes']">{{ course.stats.enrolledCount }}</a>
+              </td>
+              <td class="progress-cell"><app-progress-bar [value]="course.stats.avgProgress" [label]="'Progreso promedio en ' + course.title" /></td>
+              <td class="num">{{ course.stats.completionRate }} %</td>
+              <td class="muted">{{ course.createdAt | date: 'mediumDate' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-paginator [meta]="result.meta" (pageChange)="queryState.goToPage($event)" />
+  } @else if (hasFilters()) {
+    <app-empty-state heading="Ningún curso coincide con estos filtros" message="Ajusta las fechas o el estado, o quita los filtros.">
+      <button type="button" class="btn btn-secondary" (click)="clear()">Quitar filtros</button>
+    </app-empty-state>
+  } @else {
+    <app-empty-state heading="Aún no hay cursos" message="Crea el primero; podrás agregarle lecciones y publicarlo cuando esté listo.">
+      <a class="btn btn-primary" routerLink="/admin/cursos/nuevo">Nuevo curso</a>
+    </app-empty-state>
+  }
+} @else {
+  <div class="skeleton" aria-hidden="true"></div>
+  <div class="skeleton" aria-hidden="true"></div>
+}

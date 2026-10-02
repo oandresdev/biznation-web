@@ -1,0 +1,100 @@
+.status-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-3);
+  color: var(--bn-ink-soft);
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.hint-banner {
+  margin: 0 0 var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: #fff6d6;
+  color: var(--bn-warning);
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+  gap: var(--space-5);
+  align-items: start;
+
+  h2 {
+    margin: 0 0 var(--space-4);
+  }
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.lessons {
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+
+  li {
+    display: grid;
+    grid-template-columns: 2rem 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--bn-line);
+  }
+}
+
+.position {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--bn-track);
+  font: 700 var(--text-sm) / 1 var(--font-display);
+}
+
+.add-lesson {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--bn-line);
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.muted {
+  color: var(--bn-ink-soft);
+}
+
+.danger-zone {
+  grid-column: 1 / -1;
+  padding: var(--space-5);
+  border: 1px solid #f0c9c5;
+  border-radius: var(--radius-lg);
+
+  h2 {
+    font-size: var(--text-md);
+    margin-bottom: var(--space-2);
+  }
+
+  p {
+    margin: 0 0 var(--space-4);
+    max-width: 64ch;
+  }
+}
+
+.blocked {
+  padding: var(--space-4);
+  border-radius: var(--radius-sm);
+  background: #fbe6e4;
+  color: var(--bn-danger);
+}

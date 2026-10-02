@@ -1,0 +1,54 @@
+<app-auth-frame heading="Inicia sesión">
+  @if (expirada()) {
+    <p class="notice" role="status">Tu sesión expiró. Vuelve a iniciar sesión para continuar.</p>
+  }
+
+  <form [formRoot]="loginForm" class="auth-form">
+    @if (formError(); as message) {
+      <p class="form-error" role="alert">{{ message }}</p>
+    }
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        class="input"
+        type="email"
+        autocomplete="email"
+        [formField]="loginForm.email"
+        [attr.aria-invalid]="loginForm.email().touched() && loginForm.email().invalid()"
+        aria-describedby="email-error"
+      />
+      <app-field-error id="email-error" [state]="loginForm.email()" />
+    </div>
+
+    <div class="field">
+      <label for="password">Contraseña</label>
+      <input
+        id="password"
+        class="input"
+        type="password"
+        autocomplete="current-password"
+        [formField]="loginForm.password"
+        [attr.aria-invalid]="loginForm.password().touched() && loginForm.password().invalid()"
+        aria-describedby="password-error"
+      />
+      <app-field-error id="password-error" [state]="loginForm.password()" />
+    </div>
+
+    <button type="submit" class="btn btn-primary submit" [disabled]="loginForm().submitting()">
+      {{ loginForm().submitting() ? 'Ingresando…' : 'Iniciar sesión' }}
+    </button>
+  </form>
+
+  <p class="switch">¿No tienes cuenta? <a routerLink="/registro">Crea una</a></p>
+
+  <section class="demo" aria-labelledby="demo-title">
+    <h2 id="demo-title">Cuentas de prueba</h2>
+    <div class="demo-actions">
+      @for (account of demoAccounts; track account.email) {
+        <button type="button" class="btn btn-secondary btn-sm" (click)="useDemo(account)">Usar {{ account.label.toLowerCase() }}</button>
+      }
+    </div>
+  </section>
+</app-auth-frame>

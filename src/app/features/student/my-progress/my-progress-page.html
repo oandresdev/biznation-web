@@ -1,0 +1,50 @@
+<header class="page-header">
+  <div>
+    <h1>Mi progreso</h1>
+    <p>Tus cursos y cuánto llevas en cada uno.</p>
+  </div>
+</header>
+
+@if (progress.hasValue()) {
+  @let p = progress.value();
+
+  @if (p.score; as score) {
+    <section class="standing" aria-labelledby="standing-title">
+      <div class="standing-head">
+        <h2 id="standing-title">Tu ritmo</h2>
+        <app-segment-badge [segment]="score.segment" />
+      </div>
+      <p>{{ segmentMessage() }}</p>
+      <span class="updated">Actualizado el {{ score.computedAt | date: 'longDate' }}</span>
+    </section>
+  }
+
+  @if (p.courses.length) {
+    <ul class="my-courses">
+      @for (course of p.courses; track course.courseId) {
+        <li>
+          <div class="head">
+            <h2><a [routerLink]="['/cursos', course.courseId]">{{ course.title }}</a></h2>
+            <span class="activity">
+              @if (course.completedAt) {
+                Completado el {{ course.completedAt | date: 'mediumDate' }}
+              } @else {
+                Última actividad: {{ course.lastActivityAt | relativeTime }}
+              }
+            </span>
+          </div>
+          <app-progress-bar [value]="course.progressPct" [label]="'Progreso en ' + course.title" />
+        </li>
+      }
+    </ul>
+  } @else {
+    <app-empty-state heading="Todavía no estás en ningún curso" message="Explora los cursos disponibles e inscríbete en el que más te sirva hoy.">
+      <a class="btn btn-primary" routerLink="/cursos">Explorar cursos</a>
+    </app-empty-state>
+  }
+} @else if (progress.error()) {
+  <app-load-error [error]="progress.error()" (retry)="progress.reload()" />
+} @else {
+  <div class="skeleton" aria-hidden="true"></div>
+  <div class="skeleton" aria-hidden="true"></div>
+}

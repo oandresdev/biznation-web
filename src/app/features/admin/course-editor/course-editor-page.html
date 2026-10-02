@@ -1,0 +1,132 @@
+<a class="back-link" routerLink="/admin/cursos">Volver a cursos</a>
+
+@if (!isNew() && course.error()) {
+  <app-load-error [error]="course.error()" (retry)="course.reload()" />
+} @else if (!isNew() && !course.hasValue()) {
+  <div class="skeleton" aria-hidden="true"></div>
+  <div class="skeleton" aria-hidden="true"></div>
+} @else {
+  <header class="page-header">
+    <div>
+      <h1>{{ isNew() ? 'Nuevo curso' : model().title || 'Curso sin título' }}</h1>
+      @if (course.hasValue()) {
+        @let c = course.value();
+        <div class="status-line">
+          @if (c.isPublished) {
+            <app-badge tone="success">Publicado</app-badge>
+          } @else {
+            <app-badge>Borrador</app-badge>
+          }
+          <span>{{ c.stats.enrolledCount }} inscritos</span>
+          <span>{{ c.stats.completedCount }} lo terminaron</span>
+          <span>Progreso promedio {{ c.stats.avgProgress }} %</span>
+        </div>
+      } @else {
+        <p>Empieza por el título. Podrás agregar lecciones después de crearlo.</p>
+      }
+    </div>
+
+    @if (course.hasValue()) {
+      @let c = course.value();
+      <div class="header-actions">
+        <a class="btn btn-ghost" [routerLink]="['/admin/cursos', c.id, 'estudiantes']">Ver estudiantes</a>
+        @if (c.isPublished) {
+          <button type="button" class="btn btn-secondary" [disabled]="publishing()" (click)="setPublished(false)">Despublicar</button>
+        } @else {
+          <button type="button" class="btn btn-primary" [disabled]="publishing() || !c.lessons.length" (click)="setPublished(true)">
+            Publicar curso
+          </button>
+        }
+      </div>
+    }
+  </header>
+
+  @if (course.hasValue() && !course.value().isPublished && !course.value().lessons.length) {
+    <p class="hint-banner">Agrega al menos una lección para poder publicar este curso.</p>
+  }
+
+  <div class="editor-grid">
+    <section class="panel" aria-labelledby="details-title">
+      <h2 id="details-title">Información del curso</h2>
+      <form [formRoot]="courseForm" class="stack">
+        @if (courseFormError(); as message) {
+          <p class="form-error" role="alert">{{ message }}</p>
+        }
+        <div class="field">
+          <label for="title">Título</label>
+          <input id="title" class="input" [formField]="courseForm.title"
+            [attr.aria-invalid]="courseForm.title().touched() && courseForm.title().invalid()" aria-describedby="title-error" />
+          <app-field-error id="title-error" [state]="courseForm.title()" />
+        </div>
+        <div class="field">
+          <label for="description">Descripción</label>
+          <textarea id="description" class="input" [formField]="courseForm.description" aria-describedby="description-hint description-error"></textarea>
+          <span id="description-hint" class="hint">Qué aprenderá el estudiante, en una o dos frases.</span>
+          <app-field-error id="description-error" [state]="courseForm.description()" />
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary" [disabled]="courseForm().submitting()">
+            {{ isNew() ? 'Crear curso' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    @if (course.hasValue()) {
+      @let c = course.value();
+      <section class="panel" aria-labelledby="lessons-title">
+        <h2 id="lessons-title">Lecciones</h2>
+        @if (c.lessons.length) {
+          <ol class="lessons">
+            @for (lesson of c.lessons; track lesson.id) {
+              <li>
+                <span class="position" aria-hidden="true">{{ lesson.position }}</span>
+                <span class="lesson-title">{{ lesson.title }}</span>
+                <button type="button" class="btn btn-ghost btn-sm" [disabled]="removingLessonId() === lesson.id" (click)="removeLesson(lesson)">
+                  Eliminar<span class="visually-hidden"> {{ lesson.title }}</span>
+                </button>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="muted">Este curso aún no tiene lecciones.</p>
+        }
+
+        <form [formRoot]="lessonForm" class="stack add-lesson">
+          <h3>Agregar lección</h3>
+          <div class="field">
+            <label for="lesson-title">Título de la lección</label>
+            <input id="lesson-title" class="input" [formField]="lessonForm.title"
+              [attr.aria-invalid]="lessonForm.title().touched() && lessonForm.title().invalid()" aria-describedby="lesson-title-error" />
+            <app-field-error id="lesson-title-error" [state]="lessonForm.title()" />
+          </div>
+          <div class="field">
+            <label for="lesson-content">Contenido (opcional)</label>
+            <textarea id="lesson-content" class="input" [formField]="lessonForm.content"></textarea>
+          </div>
+          <div>
+            <button type="submit" class="btn btn-secondary" [disabled]="lessonForm().submitting()">Agregar lección</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="danger-zone" aria-labelledby="danger-title">
+        <h2 id="danger-title">Eliminar curso</h2>
+        @if (deleteBlockedBy(); as blocked) {
+          <div class="blocked" role="alert">
+            <p>
+              No se puede eliminar: {{ blocked }} {{ blocked === 1 ? 'estudiante tiene' : 'estudiantes tienen' }} progreso en este curso.
+              Despublícalo para que no lo vean nuevos estudiantes; quienes ya avanzaron conservan su historial.
+            </p>
+            @if (c.isPublished) {
+              <button type="button" class="btn btn-secondary btn-sm" [disabled]="publishing()" (click)="setPublished(false)">Despublicar en su lugar</button>
+            }
+          </div>
+        } @else {
+          <p class="muted">Solo se pueden eliminar cursos en los que nadie ha avanzado.</p>
+          <button type="button" class="btn btn-danger" [disabled]="deleting()" (click)="deleteCourse()">Eliminar curso</button>
+        }
+      </section>
+    }
+  </div>
+}

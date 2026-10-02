@@ -1,0 +1,116 @@
+.course-header {
+  margin-bottom: var(--space-7);
+  max-width: 48rem;
+}
+
+.description {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-md);
+  color: var(--bn-ink-soft);
+  max-width: 60ch;
+}
+
+.progress-block {
+  margin-top: var(--space-5);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.progress-caption {
+  font-weight: 600;
+}
+
+.enroll {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  background: var(--bn-surface);
+  border: 1px solid var(--bn-line);
+
+  p {
+    margin: 0;
+    flex: 1 1 16rem;
+  }
+}
+
+/* El recorrido de lecciones: una línea vertical que se llena de amarillo a medida que se avanza. */
+.track {
+  --marker: 2.25rem;
+  list-style: none;
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  max-width: 44rem;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--marker) 1fr;
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+
+  /* tramo de línea hacia la siguiente lección */
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: calc(var(--marker) / 2 - 2px);
+    top: var(--marker);
+    bottom: 0;
+    width: 4px;
+    background: var(--bn-track);
+  }
+
+  &.done:not(:last-child)::after {
+    background: var(--bn-yellow);
+  }
+}
+
+.marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--marker);
+  height: var(--marker);
+  border-radius: 50%;
+  border: 2px solid var(--bn-line-strong);
+  background: var(--bn-surface);
+  font: 700 var(--text-sm) / 1 var(--font-display);
+  color: var(--bn-ink-soft);
+
+  .done & {
+    border-color: var(--bn-yellow);
+    background: var(--bn-yellow);
+    color: var(--bn-navy);
+  }
+
+  .next & {
+    border-color: var(--bn-navy);
+    color: var(--bn-navy);
+    box-shadow: 0 0 0 4px rgb(255 210 63 / 0.45);
+  }
+}
+
+.step-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--marker);
+
+  h3 {
+    margin: 0;
+    font-size: var(--text-base);
+  }
+}
+
+.state {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--bn-success);
+}

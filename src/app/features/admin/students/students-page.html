@@ -1,0 +1,71 @@
+<header class="page-header">
+  <div>
+    <h1>Estudiantes</h1>
+    <p>Clasificados por su ritmo. Primero aparecen quienes más necesitan un mensaje.</p>
+  </div>
+  <button type="button" class="btn btn-secondary" [disabled]="running()" (click)="run()">
+    {{ running() ? 'Clasificando…' : 'Actualizar clasificación' }}
+  </button>
+</header>
+
+<nav class="tabs" aria-label="Filtrar por ritmo">
+  <button type="button" class="btn btn-sm" [class.btn-secondary]="!segment()" [class.btn-ghost]="segment()" [attr.aria-pressed]="!segment()"
+    (click)="queryState.update({ segmento: null })">Todos</button>
+  @for (tab of tabs(); track tab.segment) {
+    <button
+      type="button"
+      class="btn btn-sm"
+      [class.btn-secondary]="segment() === tab.segment"
+      [class.btn-ghost]="segment() !== tab.segment"
+      [attr.aria-pressed]="segment() === tab.segment"
+      (click)="queryState.update({ segmento: tab.segment })"
+    >
+      {{ tab.label }} <span class="count">{{ tab.count }}</span>
+    </button>
+  }
+</nav>
+
+@if (scores.error()) {
+  <app-load-error [error]="scores.error()" (retry)="scores.reload()" />
+} @else if (scores.hasValue()) {
+  @let result = scores.value();
+  @if (result.data.length) {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Estudiante</th>
+            <th scope="col">Ritmo</th>
+            <th scope="col" class="num">Puntaje</th>
+            <th scope="col">Por qué</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of result.data; track row.userId) {
+            <tr>
+              <td>
+                {{ row.user.name }}
+                <div class="muted">{{ row.user.email }}</div>
+              </td>
+              <td><app-segment-badge [segment]="row.segment" /></td>
+              <td class="num score">{{ row.score }}<span class="of">/100</span></td>
+              <td>
+                <ul class="reasons">
+                  @for (reason of row.reasons; track reason) {
+                    <li>{{ reason }}</li>
+                  }
+                </ul>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="footnote">Última clasificación: {{ result.data[0]?.computedAt | date: 'medium' }}</p>
+    <app-paginator [meta]="result.meta" (pageChange)="queryState.goToPage($event)" />
+  } @else {
+    <app-empty-state heading="Nadie en este grupo" message="Si acabas de crear estudiantes o cursos, actualiza la clasificación." />
+  }
+} @else {
+  <div class="skeleton" aria-hidden="true"></div>
+}

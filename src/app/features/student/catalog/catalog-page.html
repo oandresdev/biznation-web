@@ -1,0 +1,80 @@
+<header class="page-header">
+  <div>
+    <h1>Cursos</h1>
+    <p>Elige un curso para empezar o continúa donde lo dejaste.</p>
+  </div>
+</header>
+
+<div class="filters" role="search">
+  <div class="field field-grow">
+    <label for="search">Buscar por título</label>
+    <input #search id="search" class="input" type="search" placeholder="Ej.: marketing" [value]="searchDraft()" (input)="searchDraft.set(search.value)" />
+  </div>
+
+  <div class="field">
+    <label for="progress">Progreso</label>
+    <select #progress id="progress" class="input" [value]="progressFilter()" (change)="setProgress(progress.value)">
+      <option value="">Todos</option>
+      @for (option of progressOptions; track option[0]) {
+        <option [value]="option[0]">{{ option[1].label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="sort">Ordenar por</label>
+    <select #sortSelect id="sort" class="input" [value]="sort()" (change)="setSort(sortSelect.value)">
+      @for (option of sortOptions; track option[0]) {
+        <option [value]="option[0]">{{ option[1].label }}</option>
+      }
+    </select>
+  </div>
+
+  <label class="toggle">
+    <input #mine type="checkbox" [checked]="onlyMine()" (change)="toggleMine(mine.checked)" />
+    Solo mis cursos
+  </label>
+</div>
+
+@if (courses.error()) {
+  <app-load-error [error]="courses.error()" (retry)="courses.reload()" />
+} @else if (courses.hasValue()) {
+  @let result = courses.value();
+  @if (result.data.length) {
+    <ul class="course-list" [class.refreshing]="courses.isLoading()">
+      @for (course of result.data; track course.id) {
+        <li class="course-row">
+          <div class="info">
+            <h2><a [routerLink]="['/cursos', course.id]">{{ course.title }}</a></h2>
+            @if (course.description) {
+              <p class="description">{{ course.description }}</p>
+            }
+            <span class="meta">{{ course.lessonsCount }} {{ course.lessonsCount === 1 ? 'lección' : 'lecciones' }}</span>
+          </div>
+          <div class="status">
+            @if (course.isEnrolled) {
+              <app-progress-bar [value]="course.myProgress" [label]="'Progreso en ' + course.title" />
+              <a class="btn btn-secondary btn-sm" [routerLink]="['/cursos', course.id]">
+                {{ course.myProgress === 100 ? 'Repasar' : 'Continuar' }}
+              </a>
+            } @else {
+              <a class="btn btn-primary btn-sm" [routerLink]="['/cursos', course.id]">Ver curso</a>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+    <app-paginator [meta]="result.meta" (pageChange)="queryState.goToPage($event)" />
+  } @else if (hasFilters()) {
+    <app-empty-state heading="Ningún curso coincide con estos filtros" message="Prueba con otra palabra o quita algún filtro.">
+      <button type="button" class="btn btn-secondary" (click)="clearFilters()">Quitar filtros</button>
+    </app-empty-state>
+  } @else {
+    <app-empty-state heading="Aún no hay cursos publicados" message="Cuando el equipo publique el primero, aparecerá aquí." />
+  }
+} @else {
+  <div class="skeleton" aria-hidden="true"></div>
+  <div class="skeleton" aria-hidden="true"></div>
+  <div class="skeleton" aria-hidden="true"></div>
+  <span class="visually-hidden" role="status">Cargando cursos</span>
+}

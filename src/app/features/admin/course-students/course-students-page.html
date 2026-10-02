@@ -1,0 +1,67 @@
+<a class="back-link" [routerLink]="['/admin/cursos', id()]">Volver al curso</a>
+
+<header class="page-header">
+  <div>
+    <h1>{{ course.hasValue() ? course.value().title : 'Avance por estudiante' }}</h1>
+    <p>Quién avanza y quién se detuvo. Ordenado de mayor a menor progreso.</p>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Filtrar por avance">
+  @for (tab of tabs; track tab.param) {
+    <button
+      type="button"
+      class="btn btn-sm"
+      [class.btn-secondary]="activeTab().param === tab.param"
+      [class.btn-ghost]="activeTab().param !== tab.param"
+      [attr.aria-pressed]="activeTab().param === tab.param"
+      (click)="queryState.update({ estado: tab.param || null })"
+    >
+      {{ tab.label }}
+    </button>
+  }
+</nav>
+
+@if (students.error()) {
+  <app-load-error [error]="students.error()" (retry)="students.reload()" />
+} @else if (students.hasValue()) {
+  @let result = students.value();
+  @if (result.data.length) {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Estudiante</th>
+            <th scope="col">Progreso</th>
+            <th scope="col">Última actividad</th>
+            <th scope="col">Inscrito</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of result.data; track row.user.id) {
+            <tr>
+              <td>
+                {{ row.user.name }}
+                <div class="muted">{{ row.user.email }}</div>
+              </td>
+              <td class="progress-cell"><app-progress-bar [value]="row.progressPct" [label]="'Progreso de ' + row.user.name" /></td>
+              <td>
+                @if (row.completedAt) {
+                  Terminó el {{ row.completedAt | date: 'mediumDate' }}
+                } @else {
+                  {{ row.lastActivityAt | relativeTime }}
+                }
+              </td>
+              <td class="muted">{{ row.enrolledAt | date: 'mediumDate' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-paginator [meta]="result.meta" (pageChange)="queryState.goToPage($event)" />
+  } @else {
+    <app-empty-state heading="No hay estudiantes en este grupo" message="Prueba con otro filtro o comparte el curso para sumar inscritos." />
+  }
+} @else {
+  <div class="skeleton" aria-hidden="true"></div>
+}
