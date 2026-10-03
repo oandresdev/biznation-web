@@ -71,6 +71,7 @@ export class CourseEditorPage {
       required(path.title, { message: 'Escribe un título' });
       minLength(path.title, 3, { message: 'El título debe tener al menos 3 caracteres' });
       maxLength(path.title, 150, { message: 'Máximo 150 caracteres' });
+      required(path.description, { message: 'Escribe una descripción' });
       maxLength(path.description, 2000, { message: 'Máximo 2.000 caracteres' });
     },
     { submission: { action: () => this.save() } },

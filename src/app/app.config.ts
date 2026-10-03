@@ -15,7 +15,6 @@ import { PageTitleStrategy } from './core/page-title.strategy';
 
 registerLocaleData(localeEsCo);
 
-// Angular 22: zoneless y OnPush por defecto; no hace falta zone.js ni declararlo.
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
