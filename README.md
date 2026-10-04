@@ -31,7 +31,6 @@ npm run build      # producción
 
 **Administrador:** resumen con la distribución de estudiantes por segmento y los cursos que mejor funcionan · listado de cursos con filtros por título, estado, fechas y progreso promedio · editor de curso (datos, lecciones, publicar, eliminar) · avance por estudiante en cada curso · estudiantes por segmento con las razones del puntaje · mensajes de WhatsApp clasificados por tema, con reintento de los fallidos.
 
-Capturas en [`docs/capturas`](docs/capturas).
 
 ## Estructura
 
